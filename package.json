@@ -1,0 +1,68 @@
+{
+	"name": "nestjs-module-gcloud-pubsub",
+	"version": "0.0.1",
+	"description": "Nest.js Google Cloud PubSub module",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ecobee/nestjs-module-gcloud-pubsub"
+	},
+	"license": "MIT",
+	"author": "ecobee",
+	"authors": [
+		{
+			"name": "Arvin Singla",
+			"email": "arvins@ecobee.com"
+		},
+		{
+			"name": "David D'Amico",
+			"email": "david.damico@ecobee.com"
+		}
+	],
+	"keywords": [
+		"nestjs",
+		"pubsub",
+		"google"
+	],
+	"scripts": {
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"build": "rm -rf ./dist && tsc && npm run build:index",
+		"build:index": "rm -rf ./index.js ./index.d.ts && tsc -d --skipLibCheck ./index.ts",
+		"format": "prettier **/**/*.ts --ignore-path ./.prettierignore --write && git status",
+		"prepublish": "npm run format && npm run build"
+	},
+	"peerDependencies": {
+		"@nestjs/common": "^6.2.4"
+	},
+	"dependencies": {
+		"@google-cloud/pubsub": "^0.30.1"
+	},
+	"devDependencies": {
+		"@nestjs/common": "^6.2.4",
+		"@nestjs/core": "^6.2.4",
+		"@nestjs/testing": "^6.2.4",
+		"@types/dotenv": "^6.1.1",
+		"@types/glob": "^7.1.1",
+		"@types/jest": "^24.0.11",
+		"jest": "^24.7.1",
+		"jest-junit": "^6.4.0",
+		"prettier": "^1.15.3",
+		"pretty-quick": "^1.11.0",
+		"ts-jest": "^24.0.2",
+		"typescript": "^3.3.3"
+	},
+	"jest": {
+		"moduleFileExtensions": [
+			"js",
+			"json",
+			"ts"
+		],
+		"rootDir": "src",
+		"testRegex": ".spec.ts$",
+		"transform": {
+			"^.+\\.(t|j)s$": "ts-jest"
+		},
+		"coverageDirectory": "./coverage"
+	}
+}
