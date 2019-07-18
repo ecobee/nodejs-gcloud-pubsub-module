@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PubSub } from '@google-cloud/pubsub'
-import { GoogleAuthOptions } from './interfaces/gcloud-pub-sub.interface'
+import { GoogleAuthOptions } from '../interfaces/gcloud-pub-sub.interface'
 import { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
 
 @Injectable()

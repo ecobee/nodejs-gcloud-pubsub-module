@@ -1,11 +1,11 @@
 {
-	"name": "nestjs-module-gcloud-pubsub",
+	"name": "nestjs-gcloud-pubsub",
 	"version": "0.0.1",
-	"description": "Nest.js Google Cloud PubSub module",
+	"description": "Nest.js Google Cloud PubSub",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ecobee/nestjs-module-gcloud-pubsub"
+		"url": "https://github.com/ecobee/nestjs-gcloud-pubsub"
 	},
 	"license": "MIT",
 	"author": "ecobee",
@@ -33,14 +33,18 @@
 		"prepublish": "npm run format && npm run build"
 	},
 	"peerDependencies": {
-		"@nestjs/common": "^6.2.4"
+		"@nestjs/common": "^6.2.4",
+		"@nestjs/microservices": "^6.5.2"
 	},
 	"dependencies": {
-		"@google-cloud/pubsub": "^0.30.1"
+		"@google-cloud/pubsub": "^0.30.1",
+		"reflect-metadata": "^0.1.12",
+		"rxjs": "^6.0.0"
 	},
 	"devDependencies": {
 		"@nestjs/common": "^6.2.4",
 		"@nestjs/core": "^6.2.4",
+		"@nestjs/microservices": "^6.5.2",
 		"@nestjs/testing": "^6.2.4",
 		"@types/dotenv": "^6.1.1",
 		"@types/glob": "^7.1.1",

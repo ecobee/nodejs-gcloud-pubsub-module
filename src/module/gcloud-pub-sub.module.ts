@@ -4,7 +4,7 @@ import {
 	GcloudPubSubModuleAsyncOptions,
 	GcloudPubSubModuleOptions,
 	GcloudPubSubOptionsFactory,
-} from './interfaces/gcloud-pub-sub.interface'
+} from '../interfaces/gcloud-pub-sub.interface'
 
 const GCLOUDPUBSUB_MODULE_OPTIONS = 'GcloudPubSubModuleOptions'
 
