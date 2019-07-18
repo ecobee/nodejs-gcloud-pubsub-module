@@ -1,23 +1,23 @@
 import { PubSub, Subscription } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
 import { GoogleAuthOptions } from '../interfaces/gcloud-pub-sub.interface'
-
-const MESSAGE = 'message'
+import { MESSAGE } from '../helpers/constants'
 
 export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
-	private client: PubSub = null
-	private subscriptions: Subscription[] = []
+	public client: PubSub = null
+	public subscriptions: Subscription[] = []
 
 	constructor(
 		private readonly googleAuthOptions: GoogleAuthOptions,
-		private readonly subscriptionNames: string[]
+		private readonly subscriptionIds: string[],
+		private readonly patternKey: string
 	) {
 		super()
 	}
 
 	public listen(callback: () => void) {
 		this.client = new PubSub(this.googleAuthOptions)
-		this.subscriptionNames.forEach(subcriptionName => {
+		this.subscriptionIds.forEach(subcriptionName => {
 			const subscription = this.client.subscription(subcriptionName)
 			subscription.on(MESSAGE, this.handleMessage.bind(this))
 			// @todo handle errors
@@ -32,22 +32,17 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 		})
 	}
 
-	private async handleMessage(message) {
+	public async handleMessage(message) {
 		const { data } = message
 		const dataBuffer = Buffer.from(data)
 		const messageObj = JSON.parse(dataBuffer.toString())
 
-		const pattern = messageObj.event
+		const pattern = messageObj[this.patternKey]
 		const handler = this.getHandlerByPattern(pattern)
 		if (!handler) {
 			message.ack()
 			return
 		}
-
 		await handler(message)
-	}
-
-	private async init() {
-		this.client = new PubSub(this.googleAuthOptions)
 	}
 }

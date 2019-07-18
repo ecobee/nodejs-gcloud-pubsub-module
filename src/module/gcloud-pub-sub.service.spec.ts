@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Topic, PubSub } from '@google-cloud/pubsub'
 import { GcloudPubSubService } from './gcloud-pub-sub.service'
 import { mockGoogleAuthOptions, mockPublishOptions } from '../helpers/testHelpers'
 

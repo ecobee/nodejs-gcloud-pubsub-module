@@ -26,6 +26,7 @@
 	],
 	"scripts": {
 		"test": "jest",
+		"test:cov": "jest --coverage",
 		"test:watch": "jest --watch",
 		"build": "rm -rf ./dist && tsc && npm run build:index",
 		"build:index": "rm -rf ./index.js ./index.d.ts && tsc -d --skipLibCheck ./index.ts",
