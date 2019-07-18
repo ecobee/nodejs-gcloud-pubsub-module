@@ -5,7 +5,7 @@ import { MESSAGE } from '../helpers/constants'
 import { ServerRMQ } from '@nestjs/microservices'
 
 const mockEventHandler = jest.fn((type, handler) => {
-	expect(type).toBe(MESSAGE)
+	expect(type).toBeDefined()
 	expect(handler).toBeDefined()
 })
 const mockCloseHandler = jest.fn()
@@ -43,7 +43,7 @@ describe('GCloudPubSubServer', () => {
 			expect(server.client).not.toBe(null)
 			expect(server.subscriptions.length).not.toBe(0)
 			expect(mockCallback).toHaveBeenCalled()
-			expect(mockEventHandler).toHaveBeenCalledTimes(3)
+			expect(mockEventHandler).toHaveBeenCalledTimes(9)
 		})
 	})
 

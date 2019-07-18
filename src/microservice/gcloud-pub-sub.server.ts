@@ -1,7 +1,7 @@
 import { PubSub, Subscription } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
 import { GoogleAuthOptions } from '../interfaces/gcloud-pub-sub.interface'
-import { MESSAGE } from '../helpers/constants'
+import { MESSAGE, ERROR, CLOSE } from '../helpers/constants'
 
 export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
 	public client: PubSub = null
@@ -20,7 +20,8 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 		this.subscriptionIds.forEach(subcriptionName => {
 			const subscription = this.client.subscription(subcriptionName)
 			subscription.on(MESSAGE, this.handleMessage.bind(this))
-			// @todo handle errors
+			subscription.on(ERROR, this.handleError.bind(this))
+			subscription.on(CLOSE, this.close.bind(this))
 			this.subscriptions.push(subscription)
 		})
 		callback()

@@ -19,3 +19,5 @@ export const PUB_SUB_DEFAULT_BACKOFF_SETTINGS = {
 }
 
 export const MESSAGE = 'message'
+export const ERROR = 'error'
+export const CLOSE = 'close'
