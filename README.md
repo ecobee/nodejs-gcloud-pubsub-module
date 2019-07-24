@@ -103,7 +103,7 @@ export class MyService {
 
 ### Subscribing to topics
 
-To subscribe to pubsub message topics we leverage a custom NestJS Microservice. This has the benefit of allowing us to decorate our controllers as we would for starndard HTTP requests.
+To subscribe to pubsub message topics we leverage a custom NestJS Microservice. This has the benefit of allowing us to decorate our controllers as we would for standard HTTP requests.
 
 Using a Microservice alongside HTTP can be accomplished by creating a Hybrid NestJS application. Refer to [this example](https://github.com/nestjs/nest/blob/master/sample/03-microservices/src/main.ts) to see how this is accomplished.
 
