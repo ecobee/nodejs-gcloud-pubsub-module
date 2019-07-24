@@ -7,6 +7,11 @@ export interface GCloudPubSubServerOptions {
 	subscriptionIds: string[]
 }
 
+export type GcloudPubSubModuleOptions = {
+	authOptions: GoogleAuthOptions
+	publishOptions: PublishOptions
+}
+
 export interface Message {
 	topic: string
 	message: string
@@ -32,11 +37,6 @@ export interface GoogleAuthOptions {
 
 export interface GcloudPubSubOptionsFactory {
 	createGcloudPubSubOptions(): Promise<GcloudPubSubModuleOptions> | GcloudPubSubModuleOptions
-}
-
-export type GcloudPubSubModuleOptions = {
-	options: GoogleAuthOptions
-	publishOptions: PublishOptions
 }
 
 export interface GcloudPubSubModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {

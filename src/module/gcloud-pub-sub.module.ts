@@ -44,7 +44,7 @@ export class GcloudPubSubModule {
 			{
 				provide: GcloudPubSubService,
 				useFactory: async (): Promise<GcloudPubSubService> =>
-					new GcloudPubSubService(moduleOptions.options, moduleOptions.publishOptions),
+					new GcloudPubSubService(moduleOptions.authOptions, moduleOptions.publishOptions),
 			},
 		]
 		return {
@@ -64,7 +64,7 @@ export class GcloudPubSubModule {
 					gcloudPubSubModuleOptions: GcloudPubSubModuleOptions
 				): Promise<GcloudPubSubService> =>
 					new GcloudPubSubService(
-						gcloudPubSubModuleOptions.options,
+						gcloudPubSubModuleOptions.authOptions,
 						gcloudPubSubModuleOptions.publishOptions
 					),
 				inject: ['GcloudPubSubModuleOptions'],
