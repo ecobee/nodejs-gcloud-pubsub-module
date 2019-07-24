@@ -1,30 +1,43 @@
-import { PubSub, Subscription } from '@google-cloud/pubsub'
+import { PubSub, Subscription, Message } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
-import { GoogleAuthOptions } from '../interfaces/gcloud-pub-sub.interface'
+import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 import { MESSAGE, ERROR, CLOSE } from '../helpers/constants'
+
+const NOT_FOUND_ERROR = 5
+const RETRY_INTERVAL = 5000
 
 export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 
-	constructor(
-		private readonly googleAuthOptions: GoogleAuthOptions,
-		private readonly subscriptionIds: string[],
-		private readonly patternKey: string
-	) {
+	constructor(private readonly options: GCloudPubSubServerOptions) {
 		super()
 	}
 
 	public listen(callback: () => void) {
-		this.client = new PubSub(this.googleAuthOptions)
-		this.subscriptionIds.forEach(subcriptionName => {
+		this.client = new PubSub(this.options.authOptions)
+		this.options.subscriptionIds.forEach(subcriptionName => {
 			const subscription = this.client.subscription(subcriptionName)
-			subscription.on(MESSAGE, this.handleMessage.bind(this))
-			subscription.on(ERROR, this.handleError.bind(this))
+			const handleMessage = this.handleMessageFactory(subcriptionName)
+			const handleError = this.handleErrorFactory(subscription)
+			subscription.on(MESSAGE, handleMessage.bind(this))
+			subscription.on(ERROR, handleError.bind(this))
 			subscription.on(CLOSE, this.close.bind(this))
 			this.subscriptions.push(subscription)
 		})
 		callback()
+	}
+
+	public handleErrorFactory(subscription: Subscription) {
+		return async error => {
+			await subscription.close()
+			if (error.code === NOT_FOUND_ERROR) {
+				setTimeout(() => {
+					subscription.open()
+				}, RETRY_INTERVAL)
+			}
+			this.handleError(error)
+		}
 	}
 
 	public close() {
@@ -33,17 +46,14 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 		})
 	}
 
-	public async handleMessage(message) {
-		const { data } = message
-		const dataBuffer = Buffer.from(data)
-		const messageObj = JSON.parse(dataBuffer.toString())
-
-		const pattern = messageObj[this.patternKey]
-		const handler = this.getHandlerByPattern(pattern)
-		if (!handler) {
-			message.ack()
-			return
+	public handleMessageFactory(subscriptionName: string) {
+		return async (message: Message) => {
+			const handler = this.getHandlerByPattern(subscriptionName)
+			if (!handler) {
+				message.ack()
+				return
+			}
+			await handler(message)
 		}
-		await handler(message)
 	}
 }
