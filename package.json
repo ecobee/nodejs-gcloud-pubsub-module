@@ -50,6 +50,7 @@
 		"@types/dotenv": "^6.1.1",
 		"@types/glob": "^7.1.1",
 		"@types/jest": "^24.0.11",
+		"husky": "^2.3.0",
 		"jest": "^24.7.1",
 		"jest-junit": "^6.4.0",
 		"prettier": "^1.15.3",
@@ -58,16 +59,26 @@
 		"typescript": "^3.3.3"
 	},
 	"jest": {
+		"coverageDirectory": "../coverage",
 		"moduleFileExtensions": [
 			"js",
 			"json",
 			"ts"
 		],
+		"reporters": [
+			"default",
+			"jest-junit"
+		],
 		"rootDir": "src",
 		"testRegex": ".spec.ts$",
+		"testEnvironment": "node",
 		"transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
-		},
-		"coverageDirectory": "./coverage"
+		}
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "pretty-quick --staged"
+		}
 	}
 }

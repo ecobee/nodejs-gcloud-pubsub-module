@@ -25,10 +25,12 @@ GCloudPubSub.PubSub = jest.fn().mockImplementation(() => {
 describe('GCloudPubSubServer', () => {
 	let server: GCloudPubSubServer
 	const subscriptionIds = ['create', 'update', 'delete']
-	const patternKey = 'id'
 
 	beforeEach(() => {
-		server = new GCloudPubSubServer(mockGoogleAuthOptions, subscriptionIds, patternKey)
+		server = new GCloudPubSubServer({
+			authOptions: mockGoogleAuthOptions,
+			subscriptionIds,
+		})
 	})
 
 	it('Instantiates', () => {
@@ -55,10 +57,9 @@ describe('GCloudPubSubServer', () => {
 		})
 	})
 
-	describe('handleMessage', () => {
-		const patternValue = '12345'
+	describe('handleMessageFactory', () => {
 		const data = {
-			id: patternValue,
+			id: '12345',
 		}
 		const message = {
 			data: Buffer.from(JSON.stringify(data)),
@@ -71,24 +72,30 @@ describe('GCloudPubSubServer', () => {
 
 		it('Acks the message and returns when no handler can be found', async () => {
 			server.listen(() => {})
+			const subscriptionName = 'my-subscription'
 			server.getHandlerByPattern = jest.fn(pattern => {
-				expect(pattern).toBe(patternValue)
+				expect(pattern).toBe(subscriptionName)
 				return null
 			})
-			await server.handleMessage(message)
+			const handleMessage = await server.handleMessageFactory(subscriptionName)
+			// @ts-ignore
+			handleMessage(message)
 			expect(server.getHandlerByPattern).toHaveBeenCalled()
 			expect(message.ack).toHaveBeenCalled()
 		})
 
 		it('Calls the handler when a handler is found', async () => {
 			const mockHandler = jest.fn()
+			const subscriptionName = 'my-subscription'
 			server.listen(() => {})
 			// @ts-ignore
 			server.getHandlerByPattern = jest.fn(pattern => {
-				expect(pattern).toBe(patternValue)
+				expect(pattern).toBe(subscriptionName)
 				return mockHandler
 			})
-			await server.handleMessage(message)
+			const handleMessage = await server.handleMessageFactory(subscriptionName)
+			// @ts-ignore
+			handleMessage(message)
 			expect(server.getHandlerByPattern).toHaveBeenCalledTimes(1)
 			expect(message.ack).not.toHaveBeenCalled()
 			expect(mockHandler).toHaveBeenCalled()
