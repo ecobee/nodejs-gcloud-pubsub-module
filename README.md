@@ -28,6 +28,8 @@ npm install nodejs-gcloud-pubsub-module --save
 
 ## Usage
 
+Please refer to the [interfaces](src/interfaces/gcloud-pub-sub.interface.ts) file to understand parameter and object requirements.
+
 ### Publish to a topic
 
 Publishing topics follows the classic NestJS pattern of importing a module and injecting a service via dependency injection
@@ -64,8 +66,8 @@ import * as path from 'path'
 				const authOptions = config.get('pubsub.authOptions')
 				const publishOptions = config.get('pubsub.publishOptions')
 				return {
-					authOptions,
-					publishOptions,
+					authOptions /* Authentication options */,
+					publishOptions /* Message publishing options */,
 				}
 			},
 			inject: [ConfigService],
@@ -112,6 +114,11 @@ import { ApplicationModule } from './app.module'
 async function bootstrap() {
 	const app = await NestFactory.create(ApplicationModule)
 
+	const GCloudPubSubServerOptions = {
+		authOptions: {/* Authentication options */}),
+		subscriptionIds: ['subscription-name'],
+	}
+
 	app.connectMicroservice({
 		strategy: new GCloudPubSubServer(GCloudPubSubServerOptions),
 	})
@@ -131,7 +138,7 @@ import { EventPattern } from '@nestjs/microservices'
 
 @Controller('mycontroller')
 export class EntitlementController {
-	@EventPattern()
+	@EventPattern('subscription-name')
 	async handleCreateEntitlement(message: Message) {
 		const { data } = message
 		const messageData = JSON.parse(data.toString())
