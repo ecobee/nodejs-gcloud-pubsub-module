@@ -1,5 +1,8 @@
 # NodeJS GCloud Pub/Sub module
 
+[![CircleCI](https://circleci.com/gh/ecobee/nodejs-gcloud-pubsub-module.svg?style=svg&circle-token=fbf98de8e837e22ab817ad943bd540fd40684955)](https://circleci.com/gh/ecobee/nodejs-gcloud-pubsub-module)
+[![codecov](https://codecov.io/gh/ecobee/nodejs-gcloud-pubsub-module/branch/master/graph/badge.svg?token=F93WezHhBy)](https://codecov.io/gh/ecobee/nodejs-gcloud-pubsub-module)
+
 A Google Cloud Pub/Sub library for the [NestJS](https://github.com/nestjs/nest) framework. Easily subscribe or publish to topics in Google Pub/Sub.
 
 ## Features

@@ -65,4 +65,4 @@ workflows:
             - setup
       - test-unit:
           requires:
-            - build
+            - setup
