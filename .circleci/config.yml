@@ -54,6 +54,13 @@ jobs:
       - run:
           name: Build
           command: npm run build
+  publish:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - run:
+          name: Publish
+          command: npm publish --access public
 
 workflows:
   version: 2.1
@@ -66,3 +73,10 @@ workflows:
       - test-unit:
           requires:
             - setup
+      - publish:
+          requires:
+            - build
+            - test-unit
+          filters:
+            branches:
+              only: master
