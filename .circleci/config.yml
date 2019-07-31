@@ -1,0 +1,68 @@
+version: 2.1
+
+references:
+  workspace_root: &workspace_root /tmp/nodejs-gcloud-pubsub-module
+
+  container_config: &container_config
+    docker:
+      - image: circleci/node:lts
+    working_directory: *workspace_root
+
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+jobs:
+  setup:
+    <<: *container_config
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-nodejs-gcloud-pubsub-module-dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - ./*
+  test-unit:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - run:
+          name: Run unit tests
+          command: npx jest --ci --runInBand --reporters=default --reporters=jest-junit --coverage
+          environment:
+            JEST_JUNIT_OUTPUT: 'reports/jest/results.xml'
+      - run:
+          name: codecov
+          command: 'curl -s https://codecov.io/bash | bash'
+      - store_artifacts:
+          path: ./coverage/lcov-report
+          prefix: coverage
+      - store_test_results:
+          path: ./reports
+  build:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - run:
+          name: Build
+          command: npm run build
+
+workflows:
+  version: 2.1
+  build_test_deploy:
+    jobs:
+      - setup
+      - build:
+          requires:
+            - setup
+      - test-unit:
+          requires:
+            - setup
