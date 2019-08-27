@@ -9,12 +9,14 @@ const RETRY_INTERVAL = 5000
 export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
+	public isClosing: boolean = false
 
 	constructor(private readonly options: GCloudPubSubServerOptions) {
 		super()
 	}
 
 	public listen(callback: () => void) {
+		this.isClosing = false
 		this.client = new PubSub(this.options.authOptions)
 		this.options.subscriptionIds.forEach(subcriptionName => {
 			const subscription = this.client.subscription(subcriptionName)
@@ -30,17 +32,20 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 
 	public handleErrorFactory(subscription: Subscription) {
 		return error => {
-			subscription.close()
-			if (error.code === NOT_FOUND_ERROR) {
-				setTimeout(() => {
-					subscription.open()
-				}, RETRY_INTERVAL)
+			if (this.isClosing === false) {
+				subscription.close()
+				if (error.code === NOT_FOUND_ERROR) {
+					setTimeout(() => {
+						subscription.open()
+					}, RETRY_INTERVAL)
+				}
+				this.handleError(error)
 			}
-			this.handleError(error)
 		}
 	}
 
 	public close() {
+		this.isClosing = true
 		this.subscriptions.forEach(subscription => {
 			subscription.close()
 		})
