@@ -54,9 +54,11 @@ describe('GCloudPubSubServer', () => {
 	})
 
 	describe('close', () => {
-		it('Closes all subscriptions', () => {
+		it('Closes all subscriptions, and sets closing flag to appropriate state', () => {
 			server.listen(() => {})
+			expect(server.isClosing).toStrictEqual(false)
 			server.close()
+			expect(server.isClosing).toStrictEqual(true)
 			expect(mockCloseHandler).toHaveBeenCalledTimes(3)
 		})
 	})
@@ -149,6 +151,32 @@ describe('GCloudPubSubServer', () => {
 			expect(subscription.close).toHaveBeenCalled()
 			// @ts-ignore
 			expect(server.handleError).toHaveBeenCalledWith(error)
+		})
+
+		it('does not attempt to handle subscription error retry when server is closing', () => {
+			jest.setTimeout(TIMEOUT)
+			const subscription = {
+				close: jest.fn(),
+				open: jest.fn(),
+			}
+			const error = {
+				code: NOT_FOUND_ERROR,
+			}
+			// @ts-ignore
+			server.handleError = jest.fn()
+			// @ts-ignore
+			const handleError = server.handleErrorFactory(subscription)
+
+			server.isClosing = true
+
+			// @ts-ignore
+			handleError(error)
+
+			expect(subscription.close).toHaveBeenCalledTimes(0)
+			expect(subscription.open).toHaveBeenCalledTimes(0)
+
+			// @ts-ignore
+			expect(server.handleError).toHaveBeenCalledTimes(0)
 		})
 	})
 })
