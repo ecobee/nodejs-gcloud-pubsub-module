@@ -16,6 +16,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	}
 
 	public listen(callback: () => void) {
+		this.isClosing = false
 		this.client = new PubSub(this.options.authOptions)
 		this.options.subscriptionIds.forEach(subcriptionName => {
 			const subscription = this.client.subscription(subcriptionName)

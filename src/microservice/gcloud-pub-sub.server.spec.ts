@@ -46,10 +46,18 @@ describe('GCloudPubSubServer', () => {
 		it('Initializes the PubSub client and subscription objects', () => {
 			const mockCallback = jest.fn()
 			server.listen(mockCallback)
+			expect(server.isClosing).toStrictEqual(false)
 			expect(server.client).not.toBe(null)
 			expect(server.subscriptions.length).not.toBe(0)
 			expect(mockCallback).toHaveBeenCalled()
 			expect(mockEventHandler).toHaveBeenCalledTimes(9)
+		})
+
+		it('Resets isClosing state', () => {
+			const mockCallback = jest.fn()
+			server.isClosing = true
+			server.listen(mockCallback)
+			expect(server.isClosing).toStrictEqual(false)
 		})
 	})
 
