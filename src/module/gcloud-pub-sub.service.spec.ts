@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { GcloudPubSubService } from './gcloud-pub-sub.service'
 import { mockGoogleAuthOptions, mockPublishOptions } from '../helpers/testHelpers'
+import { Logger } from '@nestjs/common'
 
 jest.mock('@google-cloud/pubsub')
 
 describe('GcloudPubSubService', () => {
 	let service: GcloudPubSubService
+	const mockLogger = <Logger>(<unknown>{
+		debug: jest.fn(),
+	})
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -13,7 +17,7 @@ describe('GcloudPubSubService', () => {
 				{
 					provide: GcloudPubSubService,
 					useFactory: async (): Promise<GcloudPubSubService> =>
-						new GcloudPubSubService(mockGoogleAuthOptions, mockPublishOptions),
+						new GcloudPubSubService(mockGoogleAuthOptions, mockPublishOptions, mockLogger),
 				},
 			],
 		}).compile()
