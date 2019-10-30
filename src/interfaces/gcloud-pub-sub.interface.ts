@@ -37,31 +37,6 @@ export interface GoogleAuthOptions {
 	uri?: string
 }
 
-export interface SubscriberOptions {
-	ackDeadline?: number
-	flowControl?: FlowControlOptions
-	batching?: BatchOptions
-	streamingOptions?: MessageStreamOptions
-}
-
-export interface MessageStreamOptions {
-	highWaterMark?: number
-	maxStreams?: number
-	timeout?: number
-}
-
-export interface BatchOptions {
-	maxMessages?: number
-	maxMilliseconds?: number
-}
-
-export interface FlowControlOptions {
-	allowExcessMessages?: boolean
-	maxBytes?: number
-	maxExtension?: number
-	maxMessages?: number
-}
-
 export interface GcloudPubSubOptionsFactory {
 	createGcloudPubSubOptions(): Promise<GcloudPubSubModuleOptions> | GcloudPubSubModuleOptions
 }
