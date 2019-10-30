@@ -11,7 +11,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	public subscriptions: Subscription[] = []
 	public isClosing: boolean = false
 
-	constructor(private readonly options: GCloudPubSubServerOptions) {
+	constructor(public readonly options: GCloudPubSubServerOptions) {
 		super()
 	}
 

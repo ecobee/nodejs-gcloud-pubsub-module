@@ -1,6 +1,6 @@
 import * as GCloudPubSub from '@google-cloud/pubsub'
 import { GCloudPubSubServer } from './gcloud-pub-sub.server'
-import { mockGoogleAuthOptions } from '../helpers/testHelpers'
+import { mockGoogleAuthOptions, mockSubscriberOptions } from '../helpers/testHelpers'
 import { MESSAGE } from '../helpers/constants'
 import { ServerRMQ } from '@nestjs/microservices'
 
@@ -34,12 +34,52 @@ describe('GCloudPubSubServer', () => {
 		server = new GCloudPubSubServer({
 			authOptions: mockGoogleAuthOptions,
 			subscriptionIds,
+			subscriberOptions: mockSubscriberOptions,
 		})
 	})
 
 	it('Instantiates', () => {
 		expect(server.client).toBe(null)
 		expect(server.subscriptions.length).toBe(0)
+		expect(server.options).toMatchInlineSnapshot(`
+				Object {
+				  "authOptions": Object {
+				    "projectId": "entitlement",
+				  },
+				  "subscriberOptions": Object {
+				    "flowControl": Object {
+				      "allowExcessMessages": false,
+				      "maxMessages": 5,
+				    },
+				  },
+				  "subscriptionIds": Array [
+				    "create",
+				    "update",
+				    "delete",
+				  ],
+				}
+		`)
+	})
+
+	it('Instantiates without subscriberOptions', () => {
+		const server2 = new GCloudPubSubServer({
+			authOptions: mockGoogleAuthOptions,
+			subscriptionIds,
+		})
+		expect(server2.client).toBe(null)
+		expect(server2.subscriptions.length).toBe(0)
+		expect(server2.options).toMatchInlineSnapshot(`
+		Object {
+		  "authOptions": Object {
+		    "projectId": "entitlement",
+		  },
+		  "subscriptionIds": Array [
+		    "create",
+		    "update",
+		    "delete",
+		  ],
+		}
+	`)
 	})
 
 	describe('listen', () => {
@@ -51,6 +91,16 @@ describe('GCloudPubSubServer', () => {
 			expect(server.subscriptions.length).not.toBe(0)
 			expect(mockCallback).toHaveBeenCalled()
 			expect(mockEventHandler).toHaveBeenCalledTimes(9)
+		})
+
+		it('Initializes the PubSub client and subscription objects without subscriber options', () => {
+			const server2 = new GCloudPubSubServer({
+				authOptions: mockGoogleAuthOptions,
+				subscriptionIds,
+			})
+			const mockCallback = jest.fn()
+			server2.listen(mockCallback)
+			expect(mockCallback).toHaveBeenCalled()
 		})
 
 		it('Resets isClosing state', () => {

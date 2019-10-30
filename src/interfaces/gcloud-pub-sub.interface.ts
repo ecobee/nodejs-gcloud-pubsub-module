@@ -1,6 +1,7 @@
 import { Type } from '@nestjs/common'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
 import { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
+import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber'
 
 export interface GCloudPubSubServerOptions {
 	authOptions: GoogleAuthOptions
@@ -34,31 +35,6 @@ export interface GoogleAuthOptions {
 	scopes?: string | string[]
 	projectId?: string
 	uri?: string
-}
-
-export interface SubscriberOptions {
-	ackDeadline?: number
-	flowControl?: FlowControlOptions
-	batching?: BatchOptions
-	streamingOptions?: MessageStreamOptions
-}
-
-export interface MessageStreamOptions {
-	highWaterMark?: number
-	maxStreams?: number
-	timeout?: number
-}
-
-export interface BatchOptions {
-	maxMessages?: number
-	maxMilliseconds?: number
-}
-
-export interface FlowControlOptions {
-	allowExcessMessages?: boolean
-	maxBytes?: number
-	maxExtension?: number
-	maxMessages?: number
 }
 
 export interface GcloudPubSubOptionsFactory {
