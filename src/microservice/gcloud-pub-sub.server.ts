@@ -11,7 +11,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	public subscriptions: Subscription[] = []
 	public isClosing: boolean = false
 
-	constructor(private readonly options: GCloudPubSubServerOptions) {
+	constructor(public readonly options: GCloudPubSubServerOptions) {
 		super()
 	}
 
@@ -19,7 +19,10 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 		this.isClosing = false
 		this.client = new PubSub(this.options.authOptions)
 		this.options.subscriptionIds.forEach(subcriptionName => {
-			const subscription = this.client.subscription(subcriptionName)
+			const subscription = this.client.subscription(
+				subcriptionName,
+				this.options.subscriberOptions || {}
+			)
 			const handleMessage = this.handleMessageFactory(subcriptionName)
 			const handleError = this.handleErrorFactory(subscription)
 			subscription.on(MESSAGE, handleMessage.bind(this))

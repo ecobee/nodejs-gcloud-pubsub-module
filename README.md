@@ -120,6 +120,7 @@ async function bootstrap() {
 	const GCloudPubSubServerOptions = {
 		authOptions: {/* Authentication options */}),
 		subscriptionIds: ['subscription-name'],
+		subscriberOptions: {/* https://googleapis.dev/nodejs/pubsub/latest/global.html#SubscriberOptions */}
 	}
 
 	app.connectMicroservice({

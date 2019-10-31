@@ -1,10 +1,12 @@
 import { Type } from '@nestjs/common'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
 import { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
+import { SubscriberOptions } from '@google-cloud/pubsub/build/src/subscriber'
 
 export interface GCloudPubSubServerOptions {
 	authOptions: GoogleAuthOptions
 	subscriptionIds: string[]
+	subscriberOptions?: SubscriberOptions
 }
 
 export type GcloudPubSubModuleOptions = {
