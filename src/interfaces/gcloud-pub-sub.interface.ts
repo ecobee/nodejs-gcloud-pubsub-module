@@ -11,7 +11,7 @@ export interface GCloudPubSubServerOptions {
 
 export type GcloudPubSubModuleOptions = {
 	authOptions: GoogleAuthOptions
-	publishOptions: PublishOptions
+	publishOptions?: PublishOptions
 }
 
 export interface Message {
