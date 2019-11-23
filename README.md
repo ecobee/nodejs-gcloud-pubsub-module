@@ -70,7 +70,7 @@ import * as path from 'path'
 				const publishOptions = config.get('pubsub.publishOptions')
 				return {
 					authOptions /* Authentication options */,
-					publishOptions /* Message publishing options */,
+					publishOptions /* Message publishing options (Optional) */,
 				}
 			},
 			inject: [ConfigService],
