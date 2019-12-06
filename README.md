@@ -96,7 +96,7 @@ export class MyService {
 
 	async publish(payload: PubSubMessage) {
 		const serializedPayload = JSON.stringify(payload)
-		return await this.publishMessage(topic, serializedPayload)
+		return await this.gcloudPubSubService.publishMessage(topic, serializedPayload)
 	}
 }
 ```
