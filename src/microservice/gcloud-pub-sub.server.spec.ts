@@ -2,9 +2,8 @@ import * as GCloudPubSub from '@google-cloud/pubsub'
 import { GCloudPubSubServer } from './gcloud-pub-sub.server'
 import { mockGoogleAuthOptions, mockSubscriberOptions } from '../helpers/testHelpers'
 import { MESSAGE } from '../helpers/constants'
-import { ServerRMQ } from '@nestjs/microservices'
 
-const DEADLINE_EXCEEDED_ERROR = 4
+const INVALID_ARGUMENT = 3
 const NOT_FOUND_ERROR = 5
 const TIMEOUT = 20000
 
@@ -86,11 +85,11 @@ describe('GCloudPubSubServer', () => {
 		it('Initializes the PubSub client and subscription objects', () => {
 			const mockCallback = jest.fn()
 			server.listen(mockCallback)
-			expect(server.isClosing).toStrictEqual(false)
+			expect(server.isShuttingDown).toStrictEqual(false)
 			expect(server.client).not.toBe(null)
 			expect(server.subscriptions.length).not.toBe(0)
 			expect(mockCallback).toHaveBeenCalled()
-			expect(mockEventHandler).toHaveBeenCalledTimes(9)
+			expect(mockEventHandler).toHaveBeenCalledTimes(6)
 		})
 
 		it('Initializes the PubSub client and subscription objects without subscriber options', () => {
@@ -103,20 +102,20 @@ describe('GCloudPubSubServer', () => {
 			expect(mockCallback).toHaveBeenCalled()
 		})
 
-		it('Resets isClosing state', () => {
+		it('Resets isShuttingDown state', () => {
 			const mockCallback = jest.fn()
-			server.isClosing = true
+			server.isShuttingDown = true
 			server.listen(mockCallback)
-			expect(server.isClosing).toStrictEqual(false)
+			expect(server.isShuttingDown).toStrictEqual(false)
 		})
 	})
 
 	describe('close', () => {
 		it('Closes all subscriptions, and sets closing flag to appropriate state', () => {
 			server.listen(() => {})
-			expect(server.isClosing).toStrictEqual(false)
+			expect(server.isShuttingDown).toStrictEqual(false)
 			server.close()
-			expect(server.isClosing).toStrictEqual(true)
+			expect(server.isShuttingDown).toStrictEqual(true)
 			expect(mockCloseHandler).toHaveBeenCalledTimes(3)
 		})
 	})
@@ -126,6 +125,7 @@ describe('GCloudPubSubServer', () => {
 			id: '12345',
 		}
 		const message = {
+			id: 'test-message-id',
 			data: Buffer.from(JSON.stringify(data)),
 			ack: jest.fn(),
 		}
@@ -167,29 +167,29 @@ describe('GCloudPubSubServer', () => {
 	})
 
 	describe('handleErrorFactory', () => {
-		it('calls instance handleError method if error code is !== NOT_FOUND_ERROR', () => {
+		const subscriptionName = 'my-test-subscription'
+
+		it('calls instance handleError method and does not retry close/open subscription', () => {
 			const subscription = {
 				close: jest.fn(),
 				open: jest.fn(),
 			}
 			const error = {
-				code: DEADLINE_EXCEEDED_ERROR,
+				code: INVALID_ARGUMENT,
 			}
 			// @ts-ignore
 			server.handleError = jest.fn()
 			// @ts-ignore
-			const handleError = server.handleErrorFactory(subscription)
+			const handleError = server.handleErrorFactory(subscription, subscriptionName)
 			// @ts-ignore
 			handleError(error)
-			expect(subscription.close).toHaveBeenCalled()
+			expect(subscription.close).not.toHaveBeenCalled()
 			expect(subscription.open).not.toHaveBeenCalled()
 			// @ts-ignore
 			expect(server.handleError).toHaveBeenCalledWith(error)
 		})
-	})
 
-	describe('handleErrorFactory', () => {
-		it('retries calling open on the subscription when error is NOT_FOUND_ERROR', done => {
+		it('retries calling open on the subscription when error is in PUB_SUB_DEFAULT_RETRY_CODES', done => {
 			jest.setTimeout(TIMEOUT)
 			const subscription = {
 				close: jest.fn(),
@@ -203,7 +203,7 @@ describe('GCloudPubSubServer', () => {
 			// @ts-ignore
 			server.handleError = jest.fn()
 			// @ts-ignore
-			const handleError = server.handleErrorFactory(subscription)
+			const handleError = server.handleErrorFactory(subscription, subscriptionName)
 			// @ts-ignore
 			handleError(error)
 			expect(subscription.close).toHaveBeenCalled()
@@ -223,9 +223,9 @@ describe('GCloudPubSubServer', () => {
 			// @ts-ignore
 			server.handleError = jest.fn()
 			// @ts-ignore
-			const handleError = server.handleErrorFactory(subscription)
+			const handleError = server.handleErrorFactory(subscription, subscriptionName)
 
-			server.isClosing = true
+			server.isShuttingDown = true
 
 			// @ts-ignore
 			handleError(error)
@@ -234,7 +234,7 @@ describe('GCloudPubSubServer', () => {
 			expect(subscription.open).toHaveBeenCalledTimes(0)
 
 			// @ts-ignore
-			expect(server.handleError).toHaveBeenCalledTimes(0)
+			expect(server.handleError).toHaveBeenCalledTimes(1)
 		})
 	})
 })
