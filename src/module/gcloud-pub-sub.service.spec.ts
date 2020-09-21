@@ -32,18 +32,106 @@ describe('GcloudPubSubService', () => {
 	})
 
 	describe('publishMessage', () => {
-		it('Publishes a new message', async () => {
-			const topic = 'Homer'
-			const data = 'You Tried Your Best and You Failed Miserably. The Lesson Is Never Try'
-			const gcloudPubSubLibMock = {
-				topic: jest.fn().mockReturnThis(),
-				publish: jest.fn(buffer => {
-					expect(buffer).toMatchSnapshot()
-				}),
-			}
-			service.gcloudPubSubLib = gcloudPubSubLibMock as any
-			service.publishMessage(topic, data)
-			expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+		describe('Publishing a new message', () => {
+			it('handles string as data', () => {
+				const topic = 'Homer'
+				const data = 'You Tried Your Best and You Failed Miserably. The Lesson Is Never Try'
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, data)
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
+			it('handles Buffer as data', () => {
+				const topic = 'Homer'
+				const data = 'You Tried Your Best and You Failed Miserably. The Lesson Is Never Try'
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, Buffer.from(data))
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
+			it('handles an array of numbers as data', () => {
+				const topic = 'Homer'
+				const data = [10, 20, 30, 40, 50]
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, data)
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
+			it('handles an ArrayBuffer as data', () => {
+				const topic = 'Homer'
+				const data = new ArrayBuffer(1)
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, data)
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
+			it('handles a SharedArrayBuffer as data', () => {
+				const topic = 'Homer'
+				const data = new SharedArrayBuffer(1)
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, data)
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
+			it('handles a Uint8Array as data', () => {
+				const topic = 'Homer'
+				const data = new Uint8Array([1, 2, 3])
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, data)
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
+			it('handles a string and binary encoding', () => {
+				const topic = 'Homer'
+				const data = 'You Tried Your Best and You Failed Miserably. The Lesson Is Never Try'
+				const encoding = 'binary'
+				const gcloudPubSubLibMock = {
+					topic: jest.fn().mockReturnThis(),
+					publish: jest.fn(buffer => {
+						expect(buffer).toMatchSnapshot()
+					}),
+				}
+
+				service.gcloudPubSubLib = gcloudPubSubLibMock as any
+				service.publishMessage(topic, data, {}, encoding)
+				expect(gcloudPubSubLibMock.publish).toHaveBeenCalled()
+			})
 		})
 	})
 })
