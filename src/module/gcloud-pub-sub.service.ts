@@ -23,6 +23,8 @@ export class GcloudPubSubService {
 		encoding?: BufferEncoding
 	): Promise<string> {
 		let dataBuffer: Buffer = undefined
+		this.logger.debug(`PubSub message sent to topic: ${topic}`)
+		this.logger.debug(data)
 		if (typeof data === 'string' && encoding) {
 			dataBuffer = Buffer.from(data as string, encoding)
 		} else if (Array.isArray(data)) {
@@ -36,8 +38,6 @@ export class GcloudPubSubService {
 		} else {
 			dataBuffer = Buffer.from(data as string)
 		}
-		this.logger.debug(`PubSub message sent to topic: ${topic}`)
-		this.logger.debug(dataBuffer)
 		return this.gcloudPubSubLib.topic(topic, this.publishOptions).publish(dataBuffer, attributes)
 	}
 }
