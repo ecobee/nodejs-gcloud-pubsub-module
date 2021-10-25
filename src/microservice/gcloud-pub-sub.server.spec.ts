@@ -18,12 +18,15 @@ const mockSubscription = jest.fn(name => {
 		close: mockCloseHandler,
 	}
 })
-// @ts-ignore
-GCloudPubSub.PubSub = jest.fn().mockImplementation(() => {
-	return {
-		subscription: mockSubscription,
-	}
-})
+
+jest.mock('@google-cloud/pubsub', () => ({
+	__esModule: true,
+	PubSub: jest.fn().mockImplementation(() => {
+		return {
+			subscription: mockSubscription,
+		}
+	}),
+}))
 
 describe('GCloudPubSubServer', () => {
 	let server: GCloudPubSubServer
