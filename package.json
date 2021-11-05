@@ -36,8 +36,8 @@
 		"prepare": "npm run format && npm run build"
 	},
 	"peerDependencies": {
-		"@nestjs/common": "^7.4.0",
-		"@nestjs/microservices": "^7.4.0"
+		"@nestjs/common": "^7.4.0 || ^8.1.2",
+		"@nestjs/microservices": "^7.4.0 || ^8.1.2"
 	},
 	"dependencies": {
 		"@google-cloud/pubsub": "^2.18.1",
