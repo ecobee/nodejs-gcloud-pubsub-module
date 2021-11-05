@@ -15,7 +15,7 @@
 		"rootDir": "./src",
 		"baseUrl": "./",
 		"outDir": "./dist",
-		"lib": ["es2017"]
+		"lib": ["es2017", "DOM"]
 	},
 	"include": ["*.ts", "**/*.ts"],
 	"exclude": [
