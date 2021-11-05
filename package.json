@@ -36,19 +36,19 @@
 		"prepare": "npm run format && npm run build"
 	},
 	"peerDependencies": {
-		"@nestjs/common": "^7.4.0",
-		"@nestjs/microservices": "^7.4.0"
+		"@nestjs/common": "^7.4.0 || ^8.1.2",
+		"@nestjs/microservices": "^7.4.0 || ^8.1.2"
 	},
 	"dependencies": {
 		"@google-cloud/pubsub": "^2.18.1",
 		"reflect-metadata": "0.1.12",
-		"rxjs": "6.3.3"
+		"rxjs": "^7.4.0"
 	},
 	"devDependencies": {
-		"@nestjs/common": "^7.4.0",
-		"@nestjs/core": "^7.4.0",
-		"@nestjs/microservices": "^7.4.0",
-		"@nestjs/testing": "^7.4.0",
+		"@nestjs/common": "^8.1.2",
+		"@nestjs/core": "^8.1.2",
+		"@nestjs/microservices": "^8.1.2",
+		"@nestjs/testing": "^8.1.2",
 		"@types/dotenv": "^6.1.1",
 		"@types/glob": "^7.1.1",
 		"@types/jest": "^24.0.23",
