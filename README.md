@@ -20,13 +20,13 @@ A Google Cloud Pub/Sub library for the [NestJS](https://github.com/nestjs/nest) 
 **Yarn**
 
 ```bash
-yarn add nodejs-gcloud-pubsub-module
+yarn add @ecobee/nodejs-gcloud-pubsub-module
 ```
 
 **NPM**
 
 ```bash
-npm install nodejs-gcloud-pubsub-module --save
+npm install @ecobee/nodejs-gcloud-pubsub-module --save
 ```
 
 ## Usage
