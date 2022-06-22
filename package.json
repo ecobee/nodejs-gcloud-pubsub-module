@@ -40,7 +40,7 @@
 		"@nestjs/microservices": "^7.4.0 || ^8.1.2"
 	},
 	"dependencies": {
-		"@google-cloud/pubsub": "^2.18.1",
+		"@google-cloud/pubsub": "^3.0.1",
 		"reflect-metadata": "0.1.12",
 		"rxjs": "^7.4.0"
 	},
