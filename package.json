@@ -1,6 +1,6 @@
 {
 	"name": "@ecobee/nodejs-gcloud-pubsub-module",
-	"version": "0.7.1",
+	"version": "0.8.0",
 	"description": "A GCloud Pub/Sub module for NestJS",
 	"main": "index.js",
 	"repository": {
