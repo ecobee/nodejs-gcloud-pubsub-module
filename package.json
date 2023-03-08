@@ -46,7 +46,7 @@
 	},
 	"devDependencies": {
 		"@nestjs/common": "^8.1.2",
-		"@nestjs/core": "^8.1.2",
+		"@nestjs/core": "^9.0.5",
 		"@nestjs/microservices": "^8.1.2",
 		"@nestjs/testing": "^8.1.2",
 		"@types/dotenv": "^6.1.1",
