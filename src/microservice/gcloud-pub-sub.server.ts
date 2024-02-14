@@ -32,7 +32,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	}
 
 	public handleErrorFactory(subscription: Subscription, subcriptionName: string) {
-		return error => {
+		return (error): void => {
 			this.handleError(error)
 			if (!this.isShuttingDown && PUB_SUB_DEFAULT_RETRY_CODES.includes(error.code)) {
 				this.logger.warn(`Closing subscription: ${subcriptionName}`)
