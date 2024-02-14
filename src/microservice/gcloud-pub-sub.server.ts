@@ -3,7 +3,7 @@ import { Server, CustomTransportStrategy } from '@nestjs/microservices'
 import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 
-/* istanbul ignore next */
+/* istanbul ignore next #codecov ignore */
 export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
