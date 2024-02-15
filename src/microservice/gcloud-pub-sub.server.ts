@@ -1,11 +1,15 @@
 import { PubSub, Subscription, Message } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
-import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
-import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 
-// This line will be ignored by Codecov
+import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
+import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
+
 /* istanbul ignore next */
-export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
+
+export class GCloudPubSubServer /* istanbul ignore next */
+	extends Server
+	implements CustomTransportStrategy
+{
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 	public isShuttingDown: boolean = false
