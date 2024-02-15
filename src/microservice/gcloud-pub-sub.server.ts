@@ -3,8 +3,8 @@ import { Server, CustomTransportStrategy } from '@nestjs/microservices'
 
 import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
-
 /* istanbul ignore next */
+
 const RETRY_INTERVAL = 5000
 
 export class GCloudPubSubServer /* istanbul ignore next */
