@@ -5,6 +5,7 @@ import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constant
 import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 
 /* istanbul ignore next */
+const RETRY_INTERVAL = 5000
 
 export class GCloudPubSubServer /* istanbul ignore next */
 	extends Server
@@ -38,7 +39,6 @@ export class GCloudPubSubServer /* istanbul ignore next */
 	public handleErrorFactory(subscription: Subscription, subcriptionName: string) {
 		return (error): void => {
 			this.handleError(error)
-			const RETRY_INTERVAL = 5000
 			if (!this.isShuttingDown && PUB_SUB_DEFAULT_RETRY_CODES.includes(error.code)) {
 				this.logger.warn(`Closing subscription: ${subcriptionName}`)
 				subscription.close()
