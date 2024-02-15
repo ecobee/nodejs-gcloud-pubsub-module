@@ -48,7 +48,6 @@
 		"@nestjs/common": "^10.3.3",
 		"@nestjs/microservices": "^10.3.3",
 		"@nestjs/testing": "^10.3.3",
-		"@types/dotenv": "^8.2.0",
 		"@types/glob": "^8.1.0",
 		"@types/jest": "^29.5.12",
 		"husky": "^9.0.11",
