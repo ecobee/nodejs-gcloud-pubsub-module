@@ -1,2 +1,3 @@
 ignore:
   - src/module/gcloud-pub-sub.service.ts
+  - src/microservice/gcloud-pub-sub.server.ts
