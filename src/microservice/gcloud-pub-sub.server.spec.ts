@@ -1,7 +1,5 @@
-import * as GCloudPubSub from '@google-cloud/pubsub'
 import { GCloudPubSubServer } from './gcloud-pub-sub.server'
 import { mockGoogleAuthOptions, mockSubscriberOptions } from '../helpers/testHelpers'
-import { MESSAGE } from '../helpers/constants'
 
 const INVALID_ARGUMENT = 3
 const NOT_FOUND_ERROR = 5
@@ -12,7 +10,7 @@ const mockEventHandler = jest.fn((type, handler) => {
 	expect(handler).toBeDefined()
 })
 const mockCloseHandler = jest.fn()
-const mockSubscription = jest.fn(name => {
+const mockSubscription = jest.fn((name) => {
 	return {
 		on: mockEventHandler,
 		close: mockCloseHandler,
@@ -38,23 +36,28 @@ describe('GCloudPubSubServer', () => {
 			subscriptionIds,
 			subscriberOptions: mockSubscriberOptions,
 		})
+		jest.useFakeTimers()
+	})
+
+	afterEach(() => {
+		jest.useRealTimers()
 	})
 
 	it('Instantiates', () => {
 		expect(server.client).toBe(null)
 		expect(server.subscriptions.length).toBe(0)
 		expect(server.options).toMatchInlineSnapshot(`
-				Object {
-				  "authOptions": Object {
+				{
+				  "authOptions": {
 				    "projectId": "entitlement",
 				  },
-				  "subscriberOptions": Object {
-				    "flowControl": Object {
+				  "subscriberOptions": {
+				    "flowControl": {
 				      "allowExcessMessages": false,
 				      "maxMessages": 5,
 				    },
 				  },
-				  "subscriptionIds": Array [
+				  "subscriptionIds": [
 				    "create",
 				    "update",
 				    "delete",
@@ -71,11 +74,11 @@ describe('GCloudPubSubServer', () => {
 		expect(server2.client).toBe(null)
 		expect(server2.subscriptions.length).toBe(0)
 		expect(server2.options).toMatchInlineSnapshot(`
-		Object {
-		  "authOptions": Object {
+		{
+		  "authOptions": {
 		    "projectId": "entitlement",
 		  },
-		  "subscriptionIds": Array [
+		  "subscriptionIds": [
 		    "create",
 		    "update",
 		    "delete",
@@ -137,30 +140,30 @@ describe('GCloudPubSubServer', () => {
 			message.ack.mockReset()
 		})
 
-		it('Acks the message and returns when no handler can be found', async () => {
+		it('Acks the message and returns when no handler can be found', () => {
 			server.listen(() => {})
 			const subscriptionName = 'my-subscription'
-			server.getHandlerByPattern = jest.fn(pattern => {
+			server.getHandlerByPattern = jest.fn((pattern) => {
 				expect(pattern).toBe(subscriptionName)
 				return null
 			})
-			const handleMessage = await server.handleMessageFactory(subscriptionName)
+			const handleMessage = server.handleMessageFactory(subscriptionName)
 			// @ts-ignore
 			handleMessage(message)
 			expect(server.getHandlerByPattern).toHaveBeenCalled()
 			expect(message.ack).toHaveBeenCalled()
 		})
 
-		it('Calls the handler when a handler is found', async () => {
+		it('Calls the handler when a handler is found', () => {
 			const mockHandler = jest.fn()
 			const subscriptionName = 'my-subscription'
 			server.listen(() => {})
 			// @ts-ignore
-			server.getHandlerByPattern = jest.fn(pattern => {
+			server.getHandlerByPattern = jest.fn((pattern) => {
 				expect(pattern).toBe(subscriptionName)
 				return mockHandler
 			})
-			const handleMessage = await server.handleMessageFactory(subscriptionName)
+			const handleMessage = server.handleMessageFactory(subscriptionName)
 			// @ts-ignore
 			handleMessage(message)
 			expect(server.getHandlerByPattern).toHaveBeenCalledTimes(1)
@@ -192,52 +195,85 @@ describe('GCloudPubSubServer', () => {
 			expect(server.handleError).toHaveBeenCalledWith(error)
 		})
 
-		it('retries calling open on the subscription when error is in PUB_SUB_DEFAULT_RETRY_CODES', done => {
-			jest.setTimeout(TIMEOUT)
-			const subscription = {
-				close: jest.fn(),
-				open: jest.fn(() => {
-					done()
-				}),
-			}
-			const error = {
-				code: NOT_FOUND_ERROR,
-			}
-			// @ts-ignore
-			server.handleError = jest.fn()
-			// @ts-ignore
-			const handleError = server.handleErrorFactory(subscription, subscriptionName)
-			// @ts-ignore
-			handleError(error)
-			expect(subscription.close).toHaveBeenCalled()
-			// @ts-ignore
-			expect(server.handleError).toHaveBeenCalledWith(error)
-		})
-
-		it('does not attempt to handle subscription error retry when server is closing', () => {
-			jest.setTimeout(TIMEOUT)
+		it('retries calling open on the subscription when error is in PUB_SUB_DEFAULT_RETRY_CODES ', () => {
 			const subscription = {
 				close: jest.fn(),
 				open: jest.fn(),
 			}
+
 			const error = {
 				code: NOT_FOUND_ERROR,
 			}
+
 			// @ts-ignore
 			server.handleError = jest.fn()
-			// @ts-ignore
-			const handleError = server.handleErrorFactory(subscription, subscriptionName)
-
-			server.isShuttingDown = true
 
 			// @ts-ignore
-			handleError(error)
+			const handleErrorFunction = server.handleErrorFactory(subscription, subscriptionName)
+			handleErrorFunction(error)
 
-			expect(subscription.close).toHaveBeenCalledTimes(0)
-			expect(subscription.open).toHaveBeenCalledTimes(0)
-
-			// @ts-ignore
-			expect(server.handleError).toHaveBeenCalledTimes(1)
+			jest.advanceTimersByTime(5000)
+			expect(subscription.open).toHaveBeenCalled()
 		})
+
+		it(
+			'retries calling open on the subscription when error is in PUB_SUB_DEFAULT_RETRY_CODES mock setTimeout',
+			() => {
+				const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+
+				const subscription = {
+					close: jest.fn(),
+					open: jest.fn(),
+				}
+
+				const error = {
+					code: NOT_FOUND_ERROR,
+				}
+
+				// @ts-ignore
+				server.handleError = jest.fn()
+
+				// @ts-ignore
+				const handleErrorFunction = server.handleErrorFactory(subscription, subscriptionName)
+				handleErrorFunction(error)
+
+				jest.advanceTimersByTime(5000)
+				expect(subscription.open).toHaveBeenCalled()
+
+				expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 5000)
+
+				setTimeoutSpy.mockRestore()
+			},
+			TIMEOUT
+		)
+
+		it(
+			'does not attempt to handle subscription error retry when server is closing',
+			() => {
+				const subscription = {
+					close: jest.fn(),
+					open: jest.fn(),
+				}
+				const error = {
+					code: NOT_FOUND_ERROR,
+				}
+				// @ts-ignore
+				server.handleError = jest.fn()
+				// @ts-ignore
+				const handleError = server.handleErrorFactory(subscription, subscriptionName)
+
+				server.isShuttingDown = true
+
+				// @ts-ignore
+				handleError(error)
+
+				expect(subscription.close).toHaveBeenCalledTimes(0)
+				expect(subscription.open).toHaveBeenCalledTimes(0)
+
+				// @ts-ignore
+				expect(server.handleError).toHaveBeenCalledTimes(1)
+			},
+			TIMEOUT
+		)
 	})
 })

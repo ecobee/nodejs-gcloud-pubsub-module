@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles Buffer as data 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     89,
     111,
     117,
@@ -78,8 +78,8 @@ Object {
 `;
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles a SharedArrayBuffer as data 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     0,
   ],
   "type": "Buffer",
@@ -87,8 +87,8 @@ Object {
 `;
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles a Uint8Array as data 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     1,
     2,
     3,
@@ -98,8 +98,8 @@ Object {
 `;
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles a string and binary encoding 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     89,
     111,
     117,
@@ -175,8 +175,8 @@ Object {
 `;
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles an ArrayBuffer as data 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     0,
   ],
   "type": "Buffer",
@@ -184,8 +184,8 @@ Object {
 `;
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles an array of numbers as data 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     10,
     20,
     30,
@@ -197,8 +197,8 @@ Object {
 `;
 
 exports[`GcloudPubSubService publishMessage Publishing a new message handles string as data 1`] = `
-Object {
-  "data": Array [
+{
+  "data": [
     89,
     111,
     117,

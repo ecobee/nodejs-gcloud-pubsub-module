@@ -1,11 +1,15 @@
 import { PubSub, Subscription, Message } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
-import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
+
 import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
+import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 
 const RETRY_INTERVAL = 5000
 
-export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
+export class GCloudPubSubServer
+	extends Server
+	implements CustomTransportStrategy
+{
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 	public isShuttingDown: boolean = false
@@ -17,7 +21,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	public listen(callback: () => void) {
 		this.isShuttingDown = false
 		this.client = new PubSub(this.options.authOptions)
-		this.options.subscriptionIds.forEach(subcriptionName => {
+		this.options.subscriptionIds.forEach((subcriptionName) => {
 			const subscription = this.client.subscription(
 				subcriptionName,
 				this.options.subscriberOptions || {}
@@ -32,7 +36,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	}
 
 	public handleErrorFactory(subscription: Subscription, subcriptionName: string) {
-		return error => {
+		return (error): void => {
 			this.handleError(error)
 			if (!this.isShuttingDown && PUB_SUB_DEFAULT_RETRY_CODES.includes(error.code)) {
 				this.logger.warn(`Closing subscription: ${subcriptionName}`)
@@ -47,7 +51,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 
 	public close() {
 		this.isShuttingDown = true
-		this.subscriptions.forEach(subscription => {
+		this.subscriptions.forEach((subscription) => {
 			subscription.close()
 		})
 	}

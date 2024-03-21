@@ -38,7 +38,7 @@ describe('GcloudPubSubService', () => {
 				const data = 'You Tried Your Best and You Failed Miserably. The Lesson Is Never Try'
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
@@ -52,7 +52,7 @@ describe('GcloudPubSubService', () => {
 				const data = 'You Tried Your Best and You Failed Miserably. The Lesson Is Never Try'
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
@@ -66,7 +66,7 @@ describe('GcloudPubSubService', () => {
 				const data = [10, 20, 30, 40, 50]
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
@@ -80,7 +80,7 @@ describe('GcloudPubSubService', () => {
 				const data = new ArrayBuffer(1)
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
@@ -94,7 +94,7 @@ describe('GcloudPubSubService', () => {
 				const data = new SharedArrayBuffer(1)
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
@@ -108,7 +108,7 @@ describe('GcloudPubSubService', () => {
 				const data = new Uint8Array([1, 2, 3])
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
@@ -123,7 +123,7 @@ describe('GcloudPubSubService', () => {
 				const encoding = 'binary'
 				const gcloudPubSubLibMock = {
 					topic: jest.fn().mockReturnThis(),
-					publish: jest.fn(buffer => {
+					publish: jest.fn((buffer) => {
 						expect(buffer).toMatchSnapshot()
 					}),
 				}
