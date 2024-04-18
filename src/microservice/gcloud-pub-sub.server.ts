@@ -1,15 +1,12 @@
 import { PubSub, Subscription, Message } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
 
-import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
+import { EVENT, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 
 const RETRY_INTERVAL = 5000
 
-export class GCloudPubSubServer
-	extends Server
-	implements CustomTransportStrategy
-{
+export class GCloudPubSubServer extends Server implements CustomTransportStrategy {
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 	public isShuttingDown: boolean = false
@@ -28,15 +25,15 @@ export class GCloudPubSubServer
 			)
 			const handleMessage = this.handleMessageFactory(subcriptionName)
 			const handleError = this.handleErrorFactory(subscription, subcriptionName)
-			subscription.on(MESSAGE, handleMessage.bind(this))
-			subscription.on(ERROR, handleError)
+			subscription.on(EVENT.MESSAGE, handleMessage.bind(this))
+			subscription.on(EVENT.ERROR, handleError.bind(this))
 			this.subscriptions.push(subscription)
 		})
 		callback()
 	}
 
 	public handleErrorFactory(subscription: Subscription, subcriptionName: string) {
-		return (error): void => {
+		const handleError = (error: { code: number } & string): void => {
 			this.handleError(error)
 			if (!this.isShuttingDown && PUB_SUB_DEFAULT_RETRY_CODES.includes(error.code)) {
 				this.logger.warn(`Closing subscription: ${subcriptionName}`)
@@ -47,18 +44,17 @@ export class GCloudPubSubServer
 				}, RETRY_INTERVAL)
 			}
 		}
+		return handleError
 	}
 
 	public close() {
 		this.isShuttingDown = true
-		this.subscriptions.forEach((subscription) => {
-			subscription.close()
-		})
+		this.subscriptions.forEach((subscription) => subscription.close())
 	}
 
 	public handleMessageFactory(subscriptionName: string) {
-		return async (message: Message) => {
-			const handler = this.getHandlerByPattern(subscriptionName)
+		const handler = this.getHandlerByPattern(subscriptionName)
+		const handleMessage = async (message: Message) => {
 			if (!handler) {
 				this.logger.warn(`ack message with no active handler: ${message.id}`)
 				message.ack()
@@ -66,5 +62,6 @@ export class GCloudPubSubServer
 			}
 			await handler(message)
 		}
+		return handleMessage
 	}
 }

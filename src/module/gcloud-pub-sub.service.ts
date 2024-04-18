@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { PubSub } from '@google-cloud/pubsub'
-import { GoogleAuthOptions } from '../interfaces/gcloud-pub-sub.interface'
-import { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
+import type { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
+
+import type { GoogleAuthOptions } from '../interfaces/gcloud-pub-sub.interface'
 
 @Injectable()
 export class GcloudPubSubService {
@@ -15,7 +16,7 @@ export class GcloudPubSubService {
 	}
 
 	public publishMessage(
-		topic: string,
+		topicName: string,
 		data: string | Uint8Array | number[] | ArrayBuffer | SharedArrayBuffer,
 		attributes: { [key: string]: string } = {},
 		encoding?: BufferEncoding
@@ -34,6 +35,14 @@ export class GcloudPubSubService {
 		} else {
 			dataBuffer = Buffer.from(data as string)
 		}
-		return this.gcloudPubSubLib.topic(topic, this.publishOptions).publish(dataBuffer, attributes)
+
+		const messageOptions = {
+			data: dataBuffer,
+			attributes: attributes,
+		}
+
+		const topic = this.gcloudPubSubLib.topic(topicName, this.publishOptions)
+
+		return topic.publishMessage(messageOptions)
 	}
 }

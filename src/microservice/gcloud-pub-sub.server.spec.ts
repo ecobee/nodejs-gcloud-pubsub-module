@@ -46,24 +46,18 @@ describe('GCloudPubSubServer', () => {
 	it('Instantiates', () => {
 		expect(server.client).toBe(null)
 		expect(server.subscriptions.length).toBe(0)
-		expect(server.options).toMatchInlineSnapshot(`
-				{
-				  "authOptions": {
-				    "projectId": "entitlement",
-				  },
-				  "subscriberOptions": {
-				    "flowControl": {
-				      "allowExcessMessages": false,
-				      "maxMessages": 5,
-				    },
-				  },
-				  "subscriptionIds": [
-				    "create",
-				    "update",
-				    "delete",
-				  ],
-				}
-		`)
+		expect(server.options).toEqual({
+			authOptions: {
+				projectId: 'projectId',
+			},
+			subscriberOptions: {
+				flowControl: {
+					allowExcessMessages: false,
+					maxMessages: 5,
+				},
+			},
+			subscriptionIds: ['create', 'update', 'delete'],
+		})
 	})
 
 	it('Instantiates without subscriberOptions', () => {
@@ -73,18 +67,12 @@ describe('GCloudPubSubServer', () => {
 		})
 		expect(server2.client).toBe(null)
 		expect(server2.subscriptions.length).toBe(0)
-		expect(server2.options).toMatchInlineSnapshot(`
-		{
-		  "authOptions": {
-		    "projectId": "entitlement",
-		  },
-		  "subscriptionIds": [
-		    "create",
-		    "update",
-		    "delete",
-		  ],
-		}
-	`)
+		expect(server2.options).toEqual({
+			authOptions: {
+				projectId: 'projectId',
+			},
+			subscriptionIds: ['create', 'update', 'delete'],
+		})
 	})
 
 	describe('listen', () => {
@@ -210,6 +198,7 @@ describe('GCloudPubSubServer', () => {
 
 			// @ts-ignore
 			const handleErrorFunction = server.handleErrorFactory(subscription, subscriptionName)
+			// @ts-ignore
 			handleErrorFunction(error)
 
 			jest.advanceTimersByTime(5000)
@@ -235,6 +224,7 @@ describe('GCloudPubSubServer', () => {
 
 				// @ts-ignore
 				const handleErrorFunction = server.handleErrorFactory(subscription, subscriptionName)
+				// @ts-ignore
 				handleErrorFunction(error)
 
 				jest.advanceTimersByTime(5000)

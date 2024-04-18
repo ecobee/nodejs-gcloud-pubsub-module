@@ -1,5 +1,6 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common'
-import { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
+import { Module } from '@nestjs/common'
+import type { DynamicModule, Provider } from '@nestjs/common'
+import type { PublishOptions } from '@google-cloud/pubsub/build/src/topic'
 import { GcloudPubSubService } from './gcloud-pub-sub.service'
 import { PUB_SUB_DEFAULT_BACKOFF_SETTINGS, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 import {
