@@ -76,6 +76,10 @@ jobs:
           cache: npm
           registry-url: ${{ env.NPM_REGISTRY_URL }}
       - run: npm ci
+      - name: Check npm authentication
+        run: npm whoami --registry="${{ env.NPM_REGISTRY_URL }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
