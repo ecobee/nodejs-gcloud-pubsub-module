@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - main
   pull_request:
     branches:
       - master
-      - main
 
 env:
   NODE_VERSION: '20'
@@ -65,7 +63,7 @@ jobs:
     needs:
       - build
       - test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -80,4 +78,4 @@ jobs:
       - run: npm ci
       - run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_TOKEN: ${{ secrets.NPM_TOKEN }}
