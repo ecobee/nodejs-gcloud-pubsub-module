@@ -15,6 +15,16 @@ A Google Cloud Pub/Sub library for the [NestJS](https://github.com/nestjs/nest) 
 - Add Module for subscribing to topics
 - Add Microservice client for sending messages on topics
 
+## CI and releases
+
+GitHub Actions builds and tests pull requests targeting `master` and pushes to
+`master`. Publishing runs only on pushes to `master`, after both jobs succeed,
+using the `NPM_TOKEN` Actions secret. Coverage reporting uses `CODECOV_TOKEN`.
+
+Before releasing, bump the version in `package.json` and `package-lock.json` to
+an unpublished version. Every push to `master` attempts to publish; npm rejects
+versions that have already been published.
+
 ## Installation
 
 **Yarn**
