@@ -28,6 +28,7 @@
 	],
 	"scripts": {
 		"test": "jest",
+		"test:ci": "jest --ci --runInBand --reporters=default --reporters=jest-junit --coverage",
 		"test:cov": "jest --coverage",
 		"test:dev": "jest --watch",
 		"build": "rm -rf ./dist && tsc && npm run build:index",

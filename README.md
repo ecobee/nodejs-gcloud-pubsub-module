@@ -1,6 +1,6 @@
 # NodeJS GCloud Pub/Sub module
 
-[![CircleCI](https://circleci.com/gh/ecobee/nodejs-gcloud-pubsub-module.svg?style=svg&circle-token=fbf98de8e837e22ab817ad943bd540fd40684955)](https://circleci.com/gh/ecobee/nodejs-gcloud-pubsub-module)
+[![CI](https://github.com/ecobee/nodejs-gcloud-pubsub-module/actions/workflows/ci.yml/badge.svg)](https://github.com/ecobee/nodejs-gcloud-pubsub-module/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ecobee/nodejs-gcloud-pubsub-module/branch/master/graph/badge.svg?token=F93WezHhBy)](https://codecov.io/gh/ecobee/nodejs-gcloud-pubsub-module)
 
 A Google Cloud Pub/Sub library for the [NestJS](https://github.com/nestjs/nest) framework. Easily subscribe or publish to topics in Google Pub/Sub.
@@ -14,6 +14,16 @@ A Google Cloud Pub/Sub library for the [NestJS](https://github.com/nestjs/nest) 
 
 - Add Module for subscribing to topics
 - Add Microservice client for sending messages on topics
+
+## CI and releases
+
+GitHub Actions builds and tests pull requests targeting `master` and pushes to
+`master`. Publishing runs only on pushes to `master`, after both jobs succeed,
+using the `NPM_TOKEN` Actions secret. Coverage reporting uses `CODECOV_TOKEN`.
+
+Before releasing, bump the version in `package.json` and `package-lock.json` to
+an unpublished version. Every push to `master` attempts to publish; npm rejects
+versions that have already been published.
 
 ## Installation
 
