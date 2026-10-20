@@ -1,6 +1,5 @@
 import { PubSub, Subscription, Message } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
-import { EventEmitter } from 'events'
 import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 
@@ -10,7 +9,10 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 	public isShuttingDown: boolean = false
-	private readonly eventEmitter = new EventEmitter()
+	private readonly eventListeners: {
+		event: string
+		callback: (...args: unknown[]) => void
+	}[] = []
 
 	constructor(public readonly options: GCloudPubSubServerOptions) {
 		super()
@@ -20,11 +22,17 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 		event: EventKey,
 		callback: EventCallback
 	) {
-		return this.eventEmitter.on(event, callback as unknown as (...args: any[]) => void)
+		const listener = (...args: unknown[]) => callback(...args)
+		this.eventListeners.push({ event, callback: listener })
+		this.subscriptions.forEach((subscription) => subscription.addListener(event, listener))
+		return this
 	}
 
 	public unwrap<T>(): T {
-		return this.subscriptions as T
+		if (!this.client) {
+			throw new Error('Not initialized. Please call "listen" before accessing the Pub/Sub client.')
+		}
+		return this.client as T
 	}
 
 	public listen(callback: () => void) {
@@ -39,6 +47,9 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 			const handleError = this.handleErrorFactory(subscription, subcriptionName)
 			subscription.on(MESSAGE, handleMessage.bind(this))
 			subscription.on(ERROR, handleError)
+			this.eventListeners.forEach(({ event, callback }) =>
+				subscription.addListener(event, callback)
+			)
 			this.subscriptions.push(subscription)
 		})
 		callback()
