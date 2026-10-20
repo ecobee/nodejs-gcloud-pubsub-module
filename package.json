@@ -89,7 +89,15 @@
 		"testRegex": ".spec.ts$",
 		"testEnvironment": "node",
 		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
+			"^.+\\.(t|j)s$": [
+				"ts-jest",
+				{
+					"tsconfig": {
+						"sourceMap": true,
+						"inlineSources": true
+					}
+				}
+			]
 		}
 	}
 }
