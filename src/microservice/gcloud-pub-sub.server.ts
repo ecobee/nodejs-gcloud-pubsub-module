@@ -9,15 +9,36 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 	public isShuttingDown: boolean = false
+	private readonly eventListeners: {
+		event: string
+		callback: (...args: unknown[]) => void
+	}[] = []
 
 	constructor(public readonly options: GCloudPubSubServerOptions) {
 		super()
 	}
 
+	public on<EventKey extends string = string, EventCallback extends Function = Function>(
+		event: EventKey,
+		callback: EventCallback
+	) {
+		const listener = (...args: unknown[]) => callback(...args)
+		this.eventListeners.push({ event, callback: listener })
+		this.subscriptions.forEach((subscription) => subscription.addListener(event, listener))
+		return this
+	}
+
+	public unwrap<T>(): T {
+		if (!this.client) {
+			throw new Error('Not initialized. Please call "listen" before accessing the Pub/Sub client.')
+		}
+		return this.client as T
+	}
+
 	public listen(callback: () => void) {
 		this.isShuttingDown = false
 		this.client = new PubSub(this.options.authOptions)
-		this.options.subscriptionIds.forEach(subcriptionName => {
+		this.options.subscriptionIds.forEach((subcriptionName) => {
 			const subscription = this.client.subscription(
 				subcriptionName,
 				this.options.subscriberOptions || {}
@@ -26,13 +47,16 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 			const handleError = this.handleErrorFactory(subscription, subcriptionName)
 			subscription.on(MESSAGE, handleMessage.bind(this))
 			subscription.on(ERROR, handleError)
+			this.eventListeners.forEach(({ event, callback }) =>
+				subscription.addListener(event, callback)
+			)
 			this.subscriptions.push(subscription)
 		})
 		callback()
 	}
 
 	public handleErrorFactory(subscription: Subscription, subcriptionName: string) {
-		return error => {
+		return (error) => {
 			this.handleError(error)
 			if (!this.isShuttingDown && PUB_SUB_DEFAULT_RETRY_CODES.includes(error.code)) {
 				this.logger.warn(`Closing subscription: ${subcriptionName}`)
@@ -47,7 +71,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 
 	public close() {
 		this.isShuttingDown = true
-		this.subscriptions.forEach(subscription => {
+		this.subscriptions.forEach((subscription) => {
 			subscription.close()
 		})
 	}
