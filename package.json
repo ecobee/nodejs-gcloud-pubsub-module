@@ -69,6 +69,13 @@
 	},
 	"jest": {
 		"coverageDirectory": "../coverage",
+		"collectCoverageFrom": [
+			"**/*.ts",
+			"!**/*.spec.ts",
+			"!**/index.ts",
+			"!interfaces/**",
+			"!helpers/testHelpers.ts"
+		],
 		"moduleFileExtensions": [
 			"js",
 			"json",

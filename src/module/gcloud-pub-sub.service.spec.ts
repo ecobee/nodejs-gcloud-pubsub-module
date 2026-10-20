@@ -174,6 +174,26 @@ describe('GcloudPubSubService', () => {
 			})
 		})
 
+		it('decodes a hex-encoded string before publishing', async () => {
+			await service.publishMessage('events', '00017fff', {}, 'hex')
+
+			expect(topic.publishMessage).toHaveBeenCalledWith({
+				data: Buffer.from([0, 1, 127, 255]),
+				attributes: {},
+			})
+		})
+
+		it('preserves an empty payload and its attributes', async () => {
+			const attributes = { source: 'test' }
+
+			await service.publishMessage('events', '', attributes)
+
+			expect(topic.publishMessage).toHaveBeenCalledWith({
+				data: Buffer.alloc(0),
+				attributes,
+			})
+		})
+
 		it('propagates publishing errors', async () => {
 			const error = new Error('Publishing failed')
 			jest.mocked(topic.publishMessage).mockImplementation(() => Promise.reject(error))

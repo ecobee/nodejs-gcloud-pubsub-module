@@ -73,6 +73,9 @@ export class AppModule {}
 
 If you need to populate the `moduleOptions` with dynamic configuration data use the `forRootAsync` method. The following example pulls configuration objects using the [nestjs-config](https://github.com/nestjsx/nestjs-config) module
 
+Pass dependency modules through `forRootAsync({ imports: [...] })` when the
+factory or `useExisting` provider needs providers exported by those modules.
+
 ```ts
 import { Module } from '@nestjs/common'
 import { GcloudPubSubModule } from 'nodejs-gcloud-pubsub-module'
