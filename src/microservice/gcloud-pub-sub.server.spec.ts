@@ -12,7 +12,7 @@ const mockEventHandler = jest.fn((type, handler) => {
 	expect(handler).toBeDefined()
 })
 const mockCloseHandler = jest.fn()
-const mockSubscription = jest.fn(name => {
+const mockSubscription = jest.fn((name) => {
 	return {
 		on: mockEventHandler,
 		close: mockCloseHandler,
@@ -43,24 +43,9 @@ describe('GCloudPubSubServer', () => {
 	it('Instantiates', () => {
 		expect(server.client).toBe(null)
 		expect(server.subscriptions.length).toBe(0)
-		expect(server.options).toMatchInlineSnapshot(`
-				Object {
-				  "authOptions": Object {
-				    "projectId": "entitlement",
-				  },
-				  "subscriberOptions": Object {
-				    "flowControl": Object {
-				      "allowExcessMessages": false,
-				      "maxMessages": 5,
-				    },
-				  },
-				  "subscriptionIds": Array [
-				    "create",
-				    "update",
-				    "delete",
-				  ],
-				}
-		`)
+		expect(server.options.authOptions).toEqual(mockGoogleAuthOptions)
+		expect(server.options.subscriptionIds).toEqual(subscriptionIds)
+		expect(server.options.subscriberOptions).toEqual(mockSubscriberOptions)
 	})
 
 	it('Instantiates without subscriberOptions', () => {
@@ -70,18 +55,9 @@ describe('GCloudPubSubServer', () => {
 		})
 		expect(server2.client).toBe(null)
 		expect(server2.subscriptions.length).toBe(0)
-		expect(server2.options).toMatchInlineSnapshot(`
-		Object {
-		  "authOptions": Object {
-		    "projectId": "entitlement",
-		  },
-		  "subscriptionIds": Array [
-		    "create",
-		    "update",
-		    "delete",
-		  ],
-		}
-	`)
+		expect(server2.options.authOptions).toEqual(mockGoogleAuthOptions)
+		expect(server2.options.subscriptionIds).toEqual(subscriptionIds)
+		expect(server2.options.subscriberOptions).toBeUndefined()
 	})
 
 	describe('listen', () => {
@@ -140,7 +116,7 @@ describe('GCloudPubSubServer', () => {
 		it('Acks the message and returns when no handler can be found', async () => {
 			server.listen(() => {})
 			const subscriptionName = 'my-subscription'
-			server.getHandlerByPattern = jest.fn(pattern => {
+			server.getHandlerByPattern = jest.fn((pattern) => {
 				expect(pattern).toBe(subscriptionName)
 				return null
 			})
@@ -156,7 +132,7 @@ describe('GCloudPubSubServer', () => {
 			const subscriptionName = 'my-subscription'
 			server.listen(() => {})
 			// @ts-ignore
-			server.getHandlerByPattern = jest.fn(pattern => {
+			server.getHandlerByPattern = jest.fn((pattern) => {
 				expect(pattern).toBe(subscriptionName)
 				return mockHandler
 			})
@@ -192,13 +168,11 @@ describe('GCloudPubSubServer', () => {
 			expect(server.handleError).toHaveBeenCalledWith(error)
 		})
 
-		it('retries calling open on the subscription when error is in PUB_SUB_DEFAULT_RETRY_CODES', done => {
-			jest.setTimeout(TIMEOUT)
+		it('retries calling open on the subscription when error is in PUB_SUB_DEFAULT_RETRY_CODES', () => {
+			jest.useFakeTimers()
 			const subscription = {
 				close: jest.fn(),
-				open: jest.fn(() => {
-					done()
-				}),
+				open: jest.fn(),
 			}
 			const error = {
 				code: NOT_FOUND_ERROR,
@@ -212,6 +186,9 @@ describe('GCloudPubSubServer', () => {
 			expect(subscription.close).toHaveBeenCalled()
 			// @ts-ignore
 			expect(server.handleError).toHaveBeenCalledWith(error)
+			jest.advanceTimersByTime(TIMEOUT / 4)
+			expect(subscription.open).toHaveBeenCalled()
+			jest.useRealTimers()
 		})
 
 		it('does not attempt to handle subscription error retry when server is closing', () => {

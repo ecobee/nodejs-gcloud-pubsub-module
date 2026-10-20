@@ -25,7 +25,14 @@ Before releasing, bump the version in `package.json` and `package-lock.json` to
 an unpublished version. Every push to `master` attempts to publish; npm rejects
 versions that have already been published.
 
+`npm install` sets up the Husky pre-commit hook, which formats staged TypeScript
+files with `pretty-quick`. Use `npm run format` to format files explicitly;
+dependency installation builds the package without formatting source files.
+
 ## Installation
+
+Requires Node.js 24 or newer. Development and CI use NestJS 11 and
+`@google-cloud/pubsub` 6.
 
 **Yarn**
 

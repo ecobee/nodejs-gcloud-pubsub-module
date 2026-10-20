@@ -1,5 +1,6 @@
 import { PubSub, Subscription, Message } from '@google-cloud/pubsub'
 import { Server, CustomTransportStrategy } from '@nestjs/microservices'
+import { EventEmitter } from 'events'
 import { GCloudPubSubServerOptions } from '../interfaces/gcloud-pub-sub.interface'
 import { MESSAGE, ERROR, PUB_SUB_DEFAULT_RETRY_CODES } from '../helpers/constants'
 
@@ -9,15 +10,27 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	public client: PubSub = null
 	public subscriptions: Subscription[] = []
 	public isShuttingDown: boolean = false
+	private readonly eventEmitter = new EventEmitter()
 
 	constructor(public readonly options: GCloudPubSubServerOptions) {
 		super()
 	}
 
+	public on<EventKey extends string = string, EventCallback extends Function = Function>(
+		event: EventKey,
+		callback: EventCallback
+	) {
+		return this.eventEmitter.on(event, callback as unknown as (...args: any[]) => void)
+	}
+
+	public unwrap<T>(): T {
+		return this.subscriptions as T
+	}
+
 	public listen(callback: () => void) {
 		this.isShuttingDown = false
 		this.client = new PubSub(this.options.authOptions)
-		this.options.subscriptionIds.forEach(subcriptionName => {
+		this.options.subscriptionIds.forEach((subcriptionName) => {
 			const subscription = this.client.subscription(
 				subcriptionName,
 				this.options.subscriberOptions || {}
@@ -32,7 +45,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 	}
 
 	public handleErrorFactory(subscription: Subscription, subcriptionName: string) {
-		return error => {
+		return (error) => {
 			this.handleError(error)
 			if (!this.isShuttingDown && PUB_SUB_DEFAULT_RETRY_CODES.includes(error.code)) {
 				this.logger.warn(`Closing subscription: ${subcriptionName}`)
@@ -47,7 +60,7 @@ export class GCloudPubSubServer extends Server implements CustomTransportStrateg
 
 	public close() {
 		this.isShuttingDown = true
-		this.subscriptions.forEach(subscription => {
+		this.subscriptions.forEach((subscription) => {
 			subscription.close()
 		})
 	}
