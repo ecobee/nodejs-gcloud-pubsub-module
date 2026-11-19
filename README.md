@@ -25,7 +25,14 @@ Before releasing, bump the version in `package.json` and `package-lock.json` to
 an unpublished version. Every push to `master` attempts to publish; npm rejects
 versions that have already been published.
 
+`npm install` sets up the Husky pre-commit hook, which formats staged TypeScript
+files with `pretty-quick`. Use `npm run format` to format files explicitly;
+dependency installation builds the package without formatting source files.
+
 ## Installation
+
+Requires Node.js 24 or newer. Development and CI use NestJS 11 and
+`@google-cloud/pubsub` 6.
 
 **Yarn**
 
@@ -65,6 +72,9 @@ export class AppModule {}
 ```
 
 If you need to populate the `moduleOptions` with dynamic configuration data use the `forRootAsync` method. The following example pulls configuration objects using the [nestjs-config](https://github.com/nestjsx/nestjs-config) module
+
+Pass dependency modules through `forRootAsync({ imports: [...] })` when the
+factory or `useExisting` provider needs providers exported by those modules.
 
 ```ts
 import { Module } from '@nestjs/common'

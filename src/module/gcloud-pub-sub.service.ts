@@ -34,6 +34,8 @@ export class GcloudPubSubService {
 		} else {
 			dataBuffer = Buffer.from(data as string)
 		}
-		return this.gcloudPubSubLib.topic(topic, this.publishOptions).publish(dataBuffer, attributes)
+		return this.gcloudPubSubLib
+			.topic(topic, this.publishOptions)
+			.publishMessage({ data: dataBuffer, attributes })
 	}
 }

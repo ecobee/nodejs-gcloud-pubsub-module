@@ -1,6 +1,6 @@
 {
 	"name": "@ecobee/nodejs-gcloud-pubsub-module",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"description": "A GCloud Pub/Sub module for NestJS",
 	"main": "index.js",
 	"repository": {
@@ -8,6 +8,9 @@
 		"url": "https://github.com/ecobee/nodejs-gcloud-pubsub-module"
 	},
 	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
 	"author": "ecobee",
 	"authors": [
 		{
@@ -17,6 +20,10 @@
 		{
 			"name": "David D'Amico",
 			"email": "david.damico@ecobee.com"
+		},
+		{
+			"name": "Vikram Venkataramanan",
+			"email": "231742443+vikram-ecobee@users.noreply.github.com"
 		}
 	],
 	"keywords": [
@@ -34,35 +41,41 @@
 		"build": "rm -rf ./dist && tsc && npm run build:index",
 		"build:index": "rm -rf ./index.js ./index.d.ts && tsc -d --skipLibCheck ./index.ts",
 		"format": "prettier **/**/*.ts --ignore-path ./.prettierignore --write && git status",
-		"prepare": "npm run format && npm run build"
+		"prepare": "husky && npm run build"
 	},
 	"peerDependencies": {
-		"@nestjs/common": "^7.4.0 || ^8.1.2",
-		"@nestjs/microservices": "^7.4.0 || ^8.1.2"
+		"@nestjs/common": "^7.4.0 || ^8.1.2 || ^9.0.0 || ^10.0.0 || ^11.0.0",
+		"@nestjs/microservices": "^7.4.0 || ^8.1.2 || ^9.0.0 || ^10.0.0 || ^11.0.0"
 	},
 	"dependencies": {
-		"@google-cloud/pubsub": "^3.0.1",
-		"reflect-metadata": "0.1.12",
+		"@google-cloud/pubsub": "^6.3.0",
+		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.4.0"
 	},
 	"devDependencies": {
-		"@nestjs/common": "^8.1.2",
-		"@nestjs/core": "^8.1.2",
-		"@nestjs/microservices": "^8.1.2",
-		"@nestjs/testing": "^8.1.2",
-		"@types/dotenv": "^6.1.1",
-		"@types/glob": "^7.1.1",
-		"@types/jest": "^24.0.23",
-		"husky": "^2.3.0",
-		"jest": "^24.9.0",
-		"jest-junit": "^6.4.0",
-		"prettier": "^1.15.3",
-		"pretty-quick": "^1.11.0",
-		"ts-jest": "^24.2.0",
-		"typescript": "4.0.2"
+		"@nestjs/common": "^11.2.7",
+		"@nestjs/core": "^11.2.7",
+		"@nestjs/microservices": "^11.2.7",
+		"@nestjs/testing": "^11.2.7",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^24.19.2",
+		"husky": "^9.1.7",
+		"jest": "^30.5.2",
+		"jest-junit": "^17.0.0",
+		"prettier": "^2.8.8",
+		"pretty-quick": "^3.3.1",
+		"ts-jest": "^29.4.15",
+		"typescript": "^5.9.3"
 	},
 	"jest": {
 		"coverageDirectory": "../coverage",
+		"collectCoverageFrom": [
+			"**/*.ts",
+			"!**/*.spec.ts",
+			"!**/index.ts",
+			"!interfaces/**",
+			"!helpers/testHelpers.ts"
+		],
 		"moduleFileExtensions": [
 			"js",
 			"json",
@@ -76,12 +89,15 @@
 		"testRegex": ".spec.ts$",
 		"testEnvironment": "node",
 		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
-		}
-	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "pretty-quick --staged"
+			"^.+\\.(t|j)s$": [
+				"ts-jest",
+				{
+					"tsconfig": {
+						"sourceMap": true,
+						"inlineSources": true
+					}
+				}
+			]
 		}
 	}
 }

@@ -85,6 +85,7 @@ export class GcloudPubSubModule {
 		]
 		return {
 			module: GcloudPubSubModule,
+			imports: options.imports,
 			providers,
 			exports: providers,
 		}
