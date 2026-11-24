@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: '22'
   NPM_REGISTRY_URL: https://registry.npmjs.org
 
 permissions:
