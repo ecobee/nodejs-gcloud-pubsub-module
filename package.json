@@ -9,7 +9,7 @@
 	},
 	"license": "MIT",
 	"engines": {
-		"node": ">=24"
+		"node": ">=22"
 	},
 	"author": "ecobee",
 	"authors": [
@@ -58,7 +58,7 @@
 		"@nestjs/microservices": "^11.2.7",
 		"@nestjs/testing": "^11.2.7",
 		"@types/jest": "^30.0.0",
-		"@types/node": "^24.19.2",
+		"@types/node": "^22.20.5",
 		"husky": "^9.1.7",
 		"jest": "^30.5.2",
 		"jest-junit": "^17.0.0",
