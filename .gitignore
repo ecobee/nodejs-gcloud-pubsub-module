@@ -5,9 +5,6 @@
 /dist
 /index.js
 /index.d.ts
-# nvm
-.nvmrc
-
 # Tests
 junit.xml
 /reports
